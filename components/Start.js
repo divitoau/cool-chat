@@ -9,6 +9,7 @@ import {
   KeyboardAvoidingView,
 } from "react-native";
 
+//color selection options
 const bgColors = {
   black: "#474056",
   darkGray: "#757083",
