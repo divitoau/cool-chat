@@ -1,3 +1,10 @@
+import {
+  collection,
+  orderBy,
+  query,
+  onSnapshot,
+  addDoc,
+} from "firebase/firestore";
 import { useEffect, useState } from "react";
 import {
   StyleSheet,
@@ -8,35 +15,30 @@ import {
 } from "react-native";
 import { Bubble, GiftedChat } from "react-native-gifted-chat";
 
-const Chat = ({ route, navigation }) => {
+const Chat = ({ db, route, navigation }) => {
   const [messages, setMessages] = useState([]);
-  const { name, bgColor } = route.params;
+  const { userID, name, bgColor } = route.params;
 
-  //puts your name at the top of the chat screen
   useEffect(() => {
+    //puts your name at the top of the chat screen
     navigation.setOptions({ title: name });
-  }, []);
-
-  //dummy messages for now
-  useEffect(() => {
-    setMessages([
-      {
-        _id: 2,
-        text: `${name} has entered the chat`,
-        createdAt: new Date(),
-        system: true,
-      },
-      {
-        _id: 1,
-        text: "Hello developer",
-        createdAt: new Date(),
-        user: {
-          _id: 2,
-          name: "React Native",
-          avatar: "https://placeimg.com/140/140/any",
-        },
-      },
-    ]);
+    //read from db
+    const q = query(collection(db, "messages"), orderBy("createdAt", "desc"));
+    const unsubMessages = onSnapshot(q, (documentsSnapshot) => {
+      let newMessages = [];
+      documentsSnapshot.forEach((doc) => {
+        const obj = doc.data();
+        newMessages.push({
+          id: doc.id,
+          ...obj,
+          createdAt: obj.createdAt.toDate(),
+        });
+      });
+      setMessages(newMessages);
+    });
+    return () => {
+      if (unsubMessages) unsubMessages();
+    };
   }, []);
 
   //makes text bubbles black and white
@@ -56,11 +58,9 @@ const Chat = ({ route, navigation }) => {
     );
   };
 
-  //appends new messages to current message state
+  //write in db
   const onSend = (newMessages) => {
-    setMessages((previousMessages) =>
-      GiftedChat.append(previousMessages, newMessages)
-    );
+    addDoc(collection(db, "messages"), newMessages[0]);
   };
 
   // gifted chat ui
@@ -71,9 +71,11 @@ const Chat = ({ route, navigation }) => {
         renderBubble={renderBubble}
         onSend={(messages) => onSend(messages)}
         user={{
-          _id: 1,
+          _id: userID,
+          name: name,
         }}
-      />{/* keyboard obstruction fix */}
+      />
+      {/* keyboard obstruction fix */}
       {Platform.OS === "android" ? (
         <KeyboardAvoidingView behavior="height" />
       ) : null}

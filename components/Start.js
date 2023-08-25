@@ -8,6 +8,7 @@ import {
   ImageBackground,
   KeyboardAvoidingView,
 } from "react-native";
+import { getAuth, signInAnonymously } from "firebase/auth";
 
 //color selection options
 const bgColors = {
@@ -20,6 +21,22 @@ const bgColors = {
 const Start = ({ navigation }) => {
   const [name, setName] = useState("");
   const [bgColor, setBgColor] = useState("");
+
+  const auth = getAuth();
+  const signInUser = () => {
+    signInAnonymously(auth)
+      .then((result) => {
+        navigation.navigate("Chat", {
+          userID: result.user.uid,
+          name: name ? name : "Friend",
+          bgColor: bgColor ? bgColor : "#f8f8f8",
+        });
+        /*  Alert.alert("Signed in Successfully!"); */
+      })
+      .catch(() => {
+        Alert.alert("Unable to sign in :( try again later.");
+      });
+  };
 
   return (
     <View style={styles.container}>
@@ -75,15 +92,7 @@ const Start = ({ navigation }) => {
               onPress={() => setBgColor(bgColors.paleGreen)}
             />
           </View>
-          <TouchableOpacity
-            style={styles.chatButton}
-            onPress={() =>
-              navigation.navigate("Chat", {
-                name: name ? name : "Friend",
-                bgColor: bgColor ? bgColor : "#f8f8f8",
-              })
-            }
-          >
+          <TouchableOpacity style={styles.chatButton} onPress={signInUser}>
             <Text style={styles.buttonText}>Start Chatting</Text>
           </TouchableOpacity>
         </View>
@@ -100,7 +109,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   // have to figure out how to make this generate on a color button when clicked
-  selectCircle: {
+/*   selectCircle: {
     height: 48,
     width: 48,
     borderRadius: 24,
@@ -109,7 +118,7 @@ const styles = StyleSheet.create({
     top: -5,
     borderWidth: 3,
     borderColor: "#757083",
-  },
+  }, */
   bgImage: {
     flex: 1,
     padding: "6%",
