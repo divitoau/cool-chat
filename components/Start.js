@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   // have to figure out how to make this generate on a color button when clicked
-/*   selectCircle: {
+  /*   selectCircle: {
     height: 48,
     width: 48,
     borderRadius: 24,
