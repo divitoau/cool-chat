@@ -49,11 +49,26 @@ const CustomActions = ({
     return `${userID}-${timeStamp}-${imageName}`;
   };
 
+  const convertFileToBlob = async (uri) => {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.onload = function () {
+        resolve(xhr.response);
+      };
+      xhr.onerror = function (error) {
+        reject(new Error("XHR request failed"));
+      };
+      xhr.responseType = "blob";
+
+      xhr.open("GET", uri, true);
+      xhr.send();
+    });
+  };
+
   const uploadAndSendImage = async (imageURI) => {
     const uniqueRefString = generateReference(imageURI);
     const newUploadRef = ref(storage, uniqueRefString);
-    const response = await fetch(imageURI);
-    const blob = await response.blob();
+    const blob = await convertFileToBlob(imageURI)
     uploadBytes(newUploadRef, blob).then(async (snapshot) => {
       const imageURL = await getDownloadURL(snapshot.ref);
       onSend({ image: imageURL });
