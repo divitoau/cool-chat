@@ -43,12 +43,14 @@ const CustomActions = ({
     );
   };
 
+// creates a unique file name for the images
   const generateReference = (uri) => {
     const imageName = uri.split("/")[uri.split("/").length - 1];
     const timeStamp = new Date().getTime();
     return `${userID}-${timeStamp}-${imageName}`;
   };
 
+  // converts image to blob for firestore to read
   const convertFileToBlob = async (uri) => {
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();

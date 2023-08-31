@@ -21,6 +21,7 @@ const App = () => {
   const connectionStatus = useNetInfo();
 
   // Your web app's Firebase configuration
+  // Replace with your own Firebase config if prefered, or leave this in
   const firebaseConfig = {
     apiKey: "AIzaSyAt92CiZG99PjtxyUo5ZGXcZqMV5ydfx_M",
     authDomain: "shopping-list-demo-1ad4f.firebaseapp.com",
@@ -36,6 +37,8 @@ const App = () => {
   const db = getFirestore(app);
   const storage = getStorage(app);
 
+
+  // work in offline if there's no signal
   useEffect(() => {
     if (connectionStatus.isConnected === false) {
       Alert.alert("Connection lost :(");

@@ -114,7 +114,7 @@ const Chat = ({ db, route, navigation, isConnected, storage }) => {
     return null;
   };
 
-  //write in db
+  //write new data in firebase db
   const onSend = (newMessages) => {
     addDoc(collection(db, "messages"), newMessages[0]);
   };
